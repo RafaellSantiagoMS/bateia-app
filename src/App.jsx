@@ -143,7 +143,7 @@ export default function App() {
 
       <footer className="rodape">
         <p>
-          Bateia · Challenge 2026 FIAP × TOTVS · Enzo Augusto, Gustavo Neres e Rafaell Santiago.
+          Bateia · Challenge 2026 FIAP × TOTVS · Enzo Augusto, Gustavo Neres, Sebastian Iriarte e Rafaell Santiago.
         </p>
         <p className="rodape__nota">
           Base real de {fmt(agg.total)} reuniões anonimizadas. Nenhum dado pessoal é exibido.
