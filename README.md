@@ -10,7 +10,7 @@ se está insatisfeito e se corre risco de cancelar.
 O nome vem da bateia do garimpeiro — a peneira que separa o ouro do cascalho do rio.
 
 Challenge 2026 · FIAP × TOTVS · Enzo Augusto (RM562249), Gustavo Neres (RM561785),
-Rafaell Santiago (RM563486).
+Rafaell Santiago (RM563486), Sebastian Iriarte (RM563619).
 
 ---
 
@@ -76,33 +76,4 @@ digitada na busca. Com ele, roda só quando dados ou filtros mudam de fato.
 **Linhas clicáveis são `<button>`.** Como `div`, não seriam alcançáveis pelo teclado nem
 anunciadas por leitores de tela. Como `button`, a acessibilidade vem de graça.
 
-## Publicando no GitHub Pages
 
-O repositório já vem com o workflow em `.github/workflows/deploy.yml`. Para ativar:
-
-1. Suba o projeto numa branch `main`.
-2. No GitHub: **Settings → Pages → Source: GitHub Actions**.
-3. Cada push na `main` publica sozinho.
-
-Se o repositório **não** se chamar `bateia`, ajuste a linha `base` no
-`vite.config.js` para o nome correto — senão o CSS e o JS não carregam no Pages.
-
-## Limitações conhecidas
-
-- **422 das 1.174 reuniões** não têm segmento, unidade ou faixa preenchidos na base.
-  A interface mostra "não informado" em vez de esconder o registro.
-- A extração é **baseada em regras**, não em modelos treinados. É o protótipo que
-  valida a viabilidade; os modelos supervisionados entram na etapa de Data Science.
-- O campo `NOTA_NPS` não veio nesta base. Sem ele, não dá para cruzar o que o Bateia
-  detectou com a satisfação que o cliente declarou.
-
-## Uma correção que mudou o resultado
-
-Uma busca simples encontra "sap" em 636 reuniões e sugere que a SAP seria a maior
-concorrente citada. Quase todas, porém, são a palavra **whatsapp**. Passando a exigir
-palavra inteira, o número cai para zero e os concorrentes reais aparecem: Oracle (87),
-Senior (21) e Microsoft.
-
-O mesmo cuidado precisou ser aplicado na hora de extrair o trecho da conversa que
-justifica cada alerta — senão a tela citava uma frase sobre WhatsApp para explicar um
-alerta de concorrente.
