@@ -22,11 +22,25 @@ export default function PainelGestor({ contas, onAbrirConta }) {
   )
 
   const filtradas = useMemo(() => {
-    return contas.filter((c) => {
+    const dentro = contas.filter((c) => {
       if (segmento && c.seg !== segmento) return false
       if (unidade && c.uni !== unidade) return false
       return true
     })
+
+    // O score de prioridade satura: 87 clientes empatam no mesmo valor, porque
+    // risco e oportunidade têm teto na base. Sem desempate, a ordem dentro do
+    // bloco empatado é a do arquivo — muda sem motivo e não diz nada ao gestor.
+    //
+    // Entre empatados, vem primeiro quem tem mais reuniões (mais evidência por
+    // trás do alerta) e, persistindo o empate, quem tem a pior nota de condução
+    // (é onde o time comercial tem mais a corrigir).
+    return [...dentro].sort((a, b) =>
+      (b.prio - a.prio) ||
+      (b.n - a.n) ||
+      (a.ita - b.ita) ||
+      a.codt.localeCompare(b.codt)
+    )
   }, [contas, segmento, unidade])
 
   function trocarFiltro(setter) {
