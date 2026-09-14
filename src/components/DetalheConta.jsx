@@ -16,8 +16,17 @@ export default function DetalheConta({ conta: c, reunioes, onFechar, onAbrirReun
   }, [onFechar])
 
   const faixa = faixaPrioridade(c.prio)
+
+  // A base repete alguns registros: há reunião que aparece cinco vezes dentro
+  // do mesmo cliente. Sem filtrar por id, o painel lista a mesma conversa
+  // várias vezes — e o React ainda reclama de chave duplicada.
+  const vistas = new Set()
   const daConta = reunioes
-    .filter((r) => r.codt === c.codt)
+    .filter((r) => {
+      if (r.codt !== c.codt || vistas.has(r.id)) return false
+      vistas.add(r.id)
+      return true
+    })
     .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
 
   return (
@@ -32,7 +41,7 @@ export default function DetalheConta({ conta: c, reunioes, onFechar, onAbrirReun
             </p>
             <div className="painel__tags">
               <span className={`tag tag--${faixa.tom}`}>prioridade {faixa.rotulo.toLowerCase()}</span>
-              <span className="tag tag--neutro">{c.n} reuniões</span>
+              <span className="tag tag--neutro">{daConta.length} reuniões</span>
             </div>
           </div>
           <button className="fechar" onClick={onFechar} aria-label="Fechar detalhe">✕</button>
