@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 // o site fica em usuario.github.io/bateia/ — por isso o "/bateia/".
 export default defineConfig({
   plugins: [react()],
-  base: '/bateia/',
+  base: '/bateia-app/',
 })
