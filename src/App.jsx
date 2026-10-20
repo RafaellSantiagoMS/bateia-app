@@ -1,65 +1,33 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useBateiaData } from './hooks/useBateiaData'
 import { fmt } from './lib/format'
-import Filtros from './components/Filtros'
-import LinhaReuniao from './components/LinhaReuniao'
-import DetalheReuniao from './components/DetalheReuniao'
-import PainelGestor from './components/PainelGestor'
+import FilaHoje from './components/FilaHoje'
+import Carteira from './components/Carteira'
+import Reunioes from './components/Reunioes'
+import SobreDados from './components/SobreDados'
+import AnalisarReuniao from './components/AnalisarReuniao'
+import AnaliseReuniao from './components/AnaliseReuniao'
 import DetalheConta from './components/DetalheConta'
-import Panorama from './components/Panorama'
+import Painel from './components/Painel'
+import { Aviso } from './components/ui'
 
-const FILTROS_INICIAIS = {
-  busca: '',
-  segmento: '',
-  confianca: '',
-  risco: false,
-  oportunidade: false,
-}
-
-const ABAS = [
-  { id: 'panorama', rotulo: 'Panorama' },
-  { id: 'carteira', rotulo: 'Carteira de clientes' },
+const PAGINAS = [
+  { id: 'fila', rotulo: 'Fila de hoje' },
+  { id: 'carteira', rotulo: 'Carteira' },
   { id: 'reunioes', rotulo: 'Reuniões' },
+  { id: 'analisar', rotulo: 'Analisar reunião' },
+  { id: 'sobre', rotulo: 'Sobre os dados' },
 ]
 
 export default function App() {
   const { data, loading, error } = useBateiaData()
+  const [pagina, setPagina] = useState('fila')
 
-  const [aba, setAba] = useState('panorama')
-  const [filtros, setFiltros] = useState(FILTROS_INICIAIS)
-  const [visiveis, setVisiveis] = useState(20)
-
-  // Só uma coisa fica aberta por vez: ou uma reunião, ou um cliente.
+  // Só um painel aberto por vez: uma reunião ou um cliente.
   const [reuniaoAberta, setReuniaoAberta] = useState(null)
   const [contaAberta, setContaAberta] = useState(null)
 
-  const segmentos = useMemo(() => {
-    if (!data) return []
-    return [...new Set(data.meetings.map((m) => m.seg).filter(Boolean))].sort()
-  }, [data])
-
-  const reunioes = useMemo(() => {
-    if (!data) return []
-    const busca = filtros.busca.trim().toLowerCase()
-
-    return data.meetings.filter((m) => {
-      if (filtros.segmento && m.seg !== filtros.segmento) return false
-      if (filtros.confianca && m.conf !== filtros.confianca) return false
-      if (filtros.risco && !m.churn.risco) return false
-      if (filtros.oportunidade && !m.opp.existe) return false
-      if (busca && !`${m.id} ${m.codt || ''}`.toLowerCase().includes(busca)) return false
-      return true
-    })
-  }, [data, filtros])
-
-  function alterarFiltros(novos) {
-    setFiltros(novos)
-    setVisiveis(20)
-  }
-
-  // Ao abrir uma reunião a partir de um cliente, fecha o painel do cliente
-  // para não empilhar dois painéis sobrepostos.
-  function abrirReuniaoDeConta(reuniao) {
+  function abrirReuniaoDaConta(reuniao) {
     setContaAberta(null)
     setReuniaoAberta(reuniao)
   }
@@ -67,115 +35,59 @@ export default function App() {
   if (loading) return <Aviso texto="Carregando as reuniões…" />
   if (error) return <Aviso texto={error} />
 
-  const { agg } = data
+  const { resumo, contas, reunioes } = data
 
   return (
     <div className="app">
-      <header className="cabecalho">
-        <div>
-          <h1 className="marca">Bateia</h1>
-          <p className="marca__sub">
-            O que importa em cada conversa com o cliente, sem ninguém precisar ler a transcrição.
-          </p>
+      <nav className="lateral" aria-label="Seções">
+        <div className="marca">
+          {/* a bateia: a peneira rasa do garimpeiro, com a pepita no fundo */}
+          <svg viewBox="0 0 40 40" aria-hidden="true" className="marca__icone">
+            <path d="M3 16 Q20 40 37 16" />
+            <path d="M3 16 Q20 22 37 16" />
+            <circle cx="20" cy="25" r="3.4" />
+          </svg>
+          <span>Bateia</span>
         </div>
-      </header>
-
-      <section className="resumo">
-        <Indicador valor={fmt(agg.total)} rotulo="reuniões analisadas" />
-        <Indicador valor={fmt(agg.risco)} rotulo="com sinal de cancelamento" tom="risco" />
-        <Indicador valor={fmt(agg.oport)} rotulo="com chance de venda" tom="ganho" />
-        <Indicador valor={agg.ita_medio} rotulo="nota média de condução" />
-      </section>
-
-      <nav className="abas">
-        {ABAS.map((a) => (
-          <button
-            key={a.id}
-            className={`aba ${aba === a.id ? 'aba--ativa' : ''}`}
-            onClick={() => setAba(a.id)}
-          >
-            {a.rotulo}
-          </button>
-        ))}
+        <ul>
+          {PAGINAS.map((p) => (
+            <li key={p.id}>
+              <button className={pagina === p.id ? 'ativo' : ''} aria-current={pagina === p.id ? 'page' : undefined}
+                      onClick={() => setPagina(p.id)}>
+                {p.rotulo}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <p className="lateral__rodape">
+          {fmt(resumo.reunioes)} reuniões, {fmt(resumo.clientes)} clientes. Challenge 2026 FIAP e TOTVS.
+        </p>
       </nav>
 
-      {aba === 'panorama' && <Panorama agg={agg} />}
+      <main className="conteudo">
+        {pagina === 'fila' && <FilaHoje reunioes={reunioes} acoes={resumo.acoes} onAbrir={setReuniaoAberta} />}
+        {pagina === 'carteira' && <Carteira contas={contas} onAbrir={setContaAberta} />}
+        {pagina === 'reunioes' && <Reunioes reunioes={reunioes} onAbrir={setReuniaoAberta} />}
+        {pagina === 'analisar' && <AnalisarReuniao />}
+        {pagina === 'sobre' && <SobreDados resumo={resumo} />}
 
-      {aba === 'carteira' && (
-        <PainelGestor contas={data.accounts} onAbrirConta={setContaAberta} />
-      )}
+        <footer className="rodape">
+          Bateia, Challenge 2026 FIAP e TOTVS. Enzo Augusto, Gustavo Neres, Rafaell Santiago e Sebastian Iriarte.
+          Base real anonimizada: nenhum nome de pessoa ou empresa é exibido.
+        </footer>
+      </main>
 
-      {aba === 'reunioes' && (
-        <>
-          <p className="seccao__intro">
-            Cada reunião com o que o Bateia encontrou nela. Clique para ver os trechos da
-            conversa que geraram cada alerta.
-          </p>
-
-          <Filtros
-            filtros={filtros}
-            onChange={alterarFiltros}
-            segmentos={segmentos}
-            total={`${fmt(reunioes.length)} reuniões`}
-          />
-
-          {reunioes.length === 0 ? (
-            <p className="vazio">
-              Nenhuma reunião com esses filtros. Remova um deles para ampliar a busca.
-            </p>
-          ) : (
-            <>
-              <div className="lista">
-                {reunioes.slice(0, visiveis).map((r) => (
-                  <LinhaReuniao key={r.id} reuniao={r} onAbrir={setReuniaoAberta} />
-                ))}
-              </div>
-
-              {visiveis < reunioes.length && (
-                <button className="mais" onClick={() => setVisiveis(visiveis + 20)}>
-                  Mostrar mais reuniões
-                </button>
-              )}
-            </>
-          )}
-        </>
-      )}
-
-      <footer className="rodape">
-        <p>
-          Bateia · Challenge 2026 FIAP × TOTVS · Enzo Augusto, Gustavo Neres, Sebastian Iriarte e Rafaell Santiago.
-        </p>
-        <p className="rodape__nota">
-          Base real de {fmt(agg.total)} reuniões anonimizadas. Nenhum dado pessoal é exibido.
-        </p>
-      </footer>
-
-      {/* Renderização condicional: só existe na tela se houver algo selecionado. */}
+      {/* Renderização condicional: o painel só existe se houver algo selecionado. */}
       {reuniaoAberta && (
-        <DetalheReuniao reuniao={reuniaoAberta} onFechar={() => setReuniaoAberta(null)} />
+        <Painel titulo={`Reunião ${reuniaoAberta.id}`} onFechar={() => setReuniaoAberta(null)}>
+          <AnaliseReuniao r={reuniaoAberta} />
+        </Painel>
       )}
-
       {contaAberta && (
-        <DetalheConta
-          conta={contaAberta}
-          reunioes={data.meetings}
-          onFechar={() => setContaAberta(null)}
-          onAbrirReuniao={abrirReuniaoDeConta}
-        />
+        <Painel titulo={`Cliente ${contaAberta.cliente}`} onFechar={() => setContaAberta(null)}>
+          <DetalheConta conta={contaAberta} reunioes={reunioes} onAbrirReuniao={abrirReuniaoDaConta} />
+        </Painel>
       )}
     </div>
   )
-}
-
-function Indicador({ valor, rotulo, tom }) {
-  return (
-    <div className="indicador">
-      <div className={`indicador__valor ${tom ? `indicador__valor--${tom}` : ''}`}>{valor}</div>
-      <div className="indicador__rotulo">{rotulo}</div>
-    </div>
-  )
-}
-
-function Aviso({ texto }) {
-  return <div className="aviso">{texto}</div>
 }

@@ -1,35 +1,35 @@
-// Funções pequenas de apresentação, isoladas dos componentes.
-// Ficam aqui porque são usadas em vários lugares e são fáceis de testar.
+// Funções pequenas de apresentação, usadas por vários componentes.
 
 export const fmt = (n) => Number(n).toLocaleString('pt-BR')
 
-/** Cor da nota de condução (ITA) por faixa: bom / mediano / precisa de atenção. */
-export function itaColor(score) {
-  if (score >= 75) return 'var(--ouro)'
-  if (score >= 60) return 'var(--agua)'
-  return 'var(--ferro)'
+const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+
+/** "2026-03-18" -> "18 mar 2026" */
+export function dataCurta(iso) {
+  if (!iso) return ''
+  const [ano, mes, dia] = iso.split('-')
+  return `${Number(dia)} ${MESES[Number(mes) - 1]} ${ano}`
 }
 
-/** Classe do selo de confiança da transcrição. */
-export function seloClasse(nivel) {
-  if (nivel === 'Alta') return 'selo selo--alta'
-  if (nivel === 'Média') return 'selo selo--media'
-  return 'selo selo--baixa'
+/** Tom de cada faixa de prioridade, usado para a cor no CSS. */
+export function tomPrioridade(faixa) {
+  return { Crítica: 'critica', Alta: 'alta', Média: 'media', Baixa: 'baixa' }[faixa] || 'baixa'
 }
 
-export function sentimentoClasse(rotulo) {
-  if (rotulo === 'Positivo') return 'tag tag--positivo'
-  if (rotulo === 'Negativo') return 'tag tag--negativo'
-  return 'tag tag--neutro'
+/** Ação recomendada -> tom de cor. Risco em vermelho, venda em ouro, o resto neutro. */
+export function tomAcao(acao) {
+  if (acao === 'Retenção' || acao === 'Cuidar do relacionamento') return 'risco'
+  if (acao === 'Avançar a venda' || acao === 'Oferecer expansão') return 'ouro'
+  return 'neutro'
 }
 
 /**
- * Traduz o score de prioridade (0-100) em uma faixa legível.
- * O gestor não precisa do número; precisa saber se corre ou não.
+ * O trecho da conversa que melhor explica a recomendação:
+ * primeiro o sinal de risco, depois o concorrente, senão nada.
  */
-export function faixaPrioridade(prio) {
-  if (prio >= 75) return { rotulo: 'Crítica', tom: 'negativo', cor: 'var(--ferro)' }
-  if (prio >= 55) return { rotulo: 'Alta', tom: 'ouro', cor: 'var(--ouro)' }
-  if (prio >= 35) return { rotulo: 'Média', tom: 'positivo', cor: 'var(--agua)' }
-  return { rotulo: 'Baixa', tom: 'neutro', cor: 'var(--areia-fraca)' }
+export function trechoPrincipal(r) {
+  const sinal = r.sinais.find((s) => s.trecho)
+  if (sinal) return sinal.trecho
+  const conc = r.concorrentes.find((c) => c.trecho)
+  return conc ? conc.trecho : ''
 }
