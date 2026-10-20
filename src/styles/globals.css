@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  /* base escura */
+  --color-fundo: #0d1321;
+  --color-lateral: #090e19;
+  --color-cartao: #151d2e;
+  --color-cartao-claro: #1c2639;
+  --color-linha: #26314a;
+  --color-texto: #eef1f6;
+  --color-suave: #97a3ba;
+
+  /* destaque: o ouro da bateia */
+  --color-ouro: #e2b851;
+
+  /* blocos de cor, um por ação recomendada */
+  --color-rosa: #f7cfc8;
+  --color-manteiga: #ffe8ba;
+  --color-lilas: #e6d8f9;
+  --color-menta: #cfebda;
+  --color-ceu: #d5e5f7;
+  --color-tinta: #121826;
+
+  /* prioridade */
+  --color-critica: #f0806f;
+  --color-alta: #e2b851;
+  --color-media: #8fa8d8;
+  --color-baixa: #5d6a82;
+
+  --font-sans: "Archivo Variable", system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  /* títulos largos, como no template Wesley */
+  .titulo-largo {
+    font-stretch: 125%;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+
+  .campo {
+    @apply h-11 rounded-xl border border-linha bg-cartao px-4 text-sm text-texto placeholder:text-suave focus:border-ouro focus:outline-none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ouro);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
