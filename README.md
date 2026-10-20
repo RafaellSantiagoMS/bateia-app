@@ -1,79 +1,98 @@
 # Bateia
 
-**Inteligência conversacional para o time comercial da TOTVS.**
+Painel para o time comercial da TOTVS que mostra, a partir das transcrições das reuniões, quais clientes precisam de atenção primeiro e por quê.
 
-A TOTVS grava mais de 10 mil reuniões de vendas por mês. Elas são transcritas
-automaticamente e ninguém as lê. O Bateia lê essas conversas no lugar das pessoas e
-mostra o que apareceu em cada uma: o que o cliente quer comprar, se citou um concorrente,
-se está insatisfeito e se corre risco de cancelar.
+A TOTVS grava e transcreve milhares de reuniões de venda por mês, e ninguém consegue ler todas. O Bateia lê no lugar das pessoas e diz, para cada reunião: o produto citado, o sentimento, o risco de o cliente cancelar, a chance de venda, os assuntos da conversa e a ação recomendada, sempre com o trecho da fala que levou ao alerta. O nome vem da bateia do garimpeiro, a peneira que separa o ouro do cascalho.
 
-O nome vem da bateia do garimpeiro — a peneira que separa o ouro do cascalho do rio.
+Challenge 2026 FIAP e TOTVS. Enzo Augusto (RM562249), Gustavo Neres (RM561785), Rafaell Santiago (RM563486) e Sebastian Iriarte (RM563619).
 
-Challenge 2026 · FIAP × TOTVS · Enzo Augusto (RM562249), Gustavo Neres (RM561785),
-Rafaell Santiago (RM563486), Sebastian Iriarte (RM563619).
+Site publicado: https://rafaellsantiagoms.github.io/bateia-app/
 
----
+## Telas
+
+| Tela | Para quem | O que mostra |
+|---|---|---|
+| Fila de hoje | Vendedor | As reuniões que pedem uma ação (retenção, avançar a venda, expansão...), da maior para a menor prioridade, com o trecho da conversa que explica cada uma |
+| Carteira | Gestor | Os clientes ordenados pela reunião mais urgente de cada um |
+| Reuniões | Todos | Todas as reuniões, com busca e filtros por segmento, ação e confiança da transcrição |
+| Analisar reunião | Vendedor | Campo para colar uma transcrição nova e ver a análise na hora (precisa da API ligada) |
+| Sobre os dados | Todos | Como cada nota é calculada, os números da base e até onde dá para confiar neles |
+
+Clicando em uma reunião abre o painel com a recomendação, as notas (prioridade, oportunidade, risco de churn, sentimento), os trechos que acenderam os alertas, a condução da reunião (ITA), os produtos e valores citados e a confiança da transcrição.
 
 ## Rodando o projeto
+
+Precisa de Node.js 20 ou mais novo.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abre em `http://localhost:5173/bateia/`.
-
-> O site carrega os dados via `fetch`, então precisa de um servidor. Abrir o
-> `index.html` com clique duplo não funciona — o navegador bloqueia.
+Abre em `http://localhost:5173/bateia-app/`. O site carrega os dados com `fetch`, então precisa desse servidor; abrir o `index.html` com clique duplo não funciona.
 
 Para gerar a versão de produção:
 
 ```bash
 npm run build     # gera a pasta dist/
-npm run preview   # serve a dist/ localmente para conferir
+npm run preview   # serve a dist/ para conferir
 ```
 
-## As três telas
+Cada push na branch `main` publica o site no GitHub Pages pelo workflow em `.github/workflows/deploy.yml`.
 
-| Tela | O que mostra |
-|---|---|
-| **Panorama** | Números gerais da base e a distribuição das reuniões por segmento, confiança e reação do cliente. |
-| **Carteira de clientes** | Os 484 clientes ordenados por quem precisa de atenção primeiro. Clique para ver as reuniões que geraram o alerta. |
-| **Reuniões** | As 1.174 reuniões com filtros e busca. Clique para ver os trechos da conversa por trás de cada sinal. |
+## De onde vêm os dados
+
+O arquivo `public/data/bateia_data.json` é gerado pelo script `scripts/gerar_dados.py`, que usa o mesmo pipeline da Sprint 4 de Data Science: o modelo de Regressão Logística, o TF-IDF e as referências salvos pelo notebook (pasta `scripts/modelo`) e as mesmas funções do protótipo em Streamlit. Por isso os números do site são os mesmos do notebook.
+
+Para gerar de novo (precisa de Python com pandas, numpy, scikit-learn e joblib, e dos dois arquivos da base da TOTVS):
+
+```bash
+python scripts/gerar_dados.py CAMINHO/ANON_transcricao.json CAMINHO/ANON_nome_transcricao.csv
+```
+
+Repositório do notebook e do protótipo: https://github.com/RafaellSantiagoMS/Bateia_Sprint4_DataScience
 
 ## Como o código está organizado
 
 ```
 src/
-├─ main.jsx                    liga o React na página
-├─ App.jsx                     estado das abas, filtros e painéis
-├─ index.css                   cores e estilos
+├─ main.jsx                    liga o React na página e carrega as fontes
+├─ App.jsx                     navegação entre as telas e os painéis abertos
+├─ index.css                   cores, tipografia e layout
 ├─ hooks/
-│  └─ useBateiaData.js         carrega o JSON (loading / erro / dados)
+│  └─ useBateiaData.js         carrega os dados (carregando / erro / dados)
 ├─ lib/
-│  └─ format.js                cores, selos e faixas de prioridade
+│  ├─ api.js                   de onde os dados vêm: arquivo JSON ou API
+│  └─ format.js                datas, tons de cor e o trecho principal de cada reunião
 └─ components/
-   ├─ Panorama.jsx             gráficos da base
-   ├─ PainelGestor.jsx         lista de clientes por prioridade
-   ├─ DetalheConta.jsx         painel de um cliente
-   ├─ Filtros.jsx              barra de filtros das reuniões
-   ├─ LinhaReuniao.jsx         uma reunião na lista
-   └─ DetalheReuniao.jsx       painel com tudo que foi extraído
+   ├─ FilaHoje.jsx             fila de ações do vendedor
+   ├─ Carteira.jsx             clientes por prioridade
+   ├─ Reunioes.jsx             todas as reuniões com filtros
+   ├─ AnalisarReuniao.jsx      formulário para uma transcrição nova
+   ├─ SobreDados.jsx           método e números da base
+   ├─ AnaliseReuniao.jsx       tudo o que foi encontrado em uma reunião
+   ├─ DetalheConta.jsx         reuniões de um cliente
+   ├─ Painel.jsx               painel lateral (fecha com Esc ou clicando fora)
+   └─ ui.jsx                   peças pequenas: prioridade, trecho, barras
 ```
 
-O dado fica em `public/data/bateia_data.json`, gerado pelo pipeline de análise a
-partir da base real de transcrições. Trocar esse arquivo troca o conteúdo do site
-inteiro, sem mexer em uma linha de componente.
+## Ligando na API (back-end)
 
-## Três decisões de código
+Sem configuração, o site lê o arquivo JSON. Para usar a API do Bateia, crie um arquivo `.env` na raiz:
 
-**Componentes controlados.** `Filtros` não guarda estado próprio: recebe os valores e
-avisa o pai quando algo muda. Assim existe uma única fonte de verdade, no `App`.
+```
+VITE_API_URL=http://localhost:8080
+```
 
-**`useMemo` na filtragem.** Sem ele, percorrer as 1.174 reuniões rodaria a cada tecla
-digitada na busca. Com ele, roda só quando dados ou filtros mudam de fato.
+O site passa a chamar dois endpoints, sem mudar nenhum componente:
 
-**Linhas clicáveis são `<button>`.** Como `div`, não seriam alcançáveis pelo teclado nem
-anunciadas por leitores de tela. Como `button`, a acessibilidade vem de graça.
+| Verbo | URI | Envia | Devolve |
+|---|---|---|---|
+| GET | `/painel` | nada | `{ resumo, contas, reunioes }`, no mesmo formato do `bateia_data.json` |
+| POST | `/reunioes/analise` | `{ "transcricao": "..." }` | uma reunião analisada, no mesmo formato de um item de `reunioes` |
 
+A API precisa liberar CORS para o endereço do site. O formato de cada reunião está no próprio `bateia_data.json`; os campos principais são `id`, `cliente`, `segmento`, `data`, `acao`, `recomendacao`, `prioridade`, `oportunidade`, `risco`, `sentimento`, `ita`, `criterios`, `sinais`, `concorrentes`, `produtos`, `valores`, `termos` e `selo`.
 
+## Limitações
+
+O alerta de churn é feito por palavras e não reconheceu os trechos de risco que o grupo anotou à mão; ele indica quais reuniões ler, e não que o cliente vai cancelar. A nota de oportunidade vem de um modelo treinado com só 205 reuniões rotuladas. O índice de condução (ITA) ainda não foi comparado com resultado de venda. A análise de uma reunião nova depende da API, porque o modelo roda em Python e não no navegador.
