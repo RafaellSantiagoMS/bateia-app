@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  /* base escura */
-  --color-fundo: #0d1321;
-  --color-lateral: #090e19;
-  --color-cartao: #151d2e;
-  --color-cartao-claro: #1c2639;
-  --color-linha: #26314a;
-  --color-texto: #eef1f6;
-  --color-suave: #97a3ba;
+  /* base escura: leito de rio */
+  --color-fundo: #0f1513;
+  --color-cartao: #18201d;
+  --color-cartao-claro: #212b27;
+  --color-linha: #2c3833;
+  --color-texto: #f2efe7;
+  --color-suave: #a3aaa4;
+  --color-areia: #8a8063;
+  --color-cascalho: #3a4540;
 
   /* destaque: o ouro da bateia */
   --color-ouro: #e2b851;
@@ -19,13 +20,13 @@
   --color-lilas: #e6d8f9;
   --color-menta: #cfebda;
   --color-ceu: #d5e5f7;
-  --color-tinta: #121826;
+  --color-tinta: #141a17;
 
   /* prioridade */
   --color-critica: #f0806f;
   --color-alta: #e2b851;
-  --color-media: #8fa8d8;
-  --color-baixa: #5d6a82;
+  --color-media: #b9c6d8;
+  --color-baixa: #6f7a73;
 
   --font-sans: "Archivo Variable", system-ui, sans-serif;
 }

@@ -27,10 +27,10 @@ const Grafico = ({ titulo, nota, dados, cor }: GraficoProps) => {
             width={150}
             tickLine={false}
             axisLine={false}
-            tick={{ fill: "#97a3ba", fontSize: 12 }}
+            tick={{ fill: "#a3aaa4", fontSize: 12 }}
           />
           <Bar dataKey="valor" fill={cor} radius={[0, 6, 6, 0]} barSize={16} isAnimationActive={false}>
-            <LabelList dataKey="valor" position="right" fill="#eef1f6" fontSize={12} />
+            <LabelList dataKey="valor" position="right" fill="#f2efe7" fontSize={12} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

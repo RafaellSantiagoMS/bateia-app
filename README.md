@@ -12,6 +12,7 @@ Site publicado: https://rafaellsantiagoms.github.io/bateia-app/
 
 | Tela | Para quem | O que mostra |
 |---|---|---|
+| Início | Todos | A bateia com as 982 reuniões (as mais urgentes assentam no centro, em dourado), os números da base, o caminho da transcrição até a recomendação e a reunião mais urgente do momento |
 | Fila de hoje | Vendedor | As reuniões que pedem uma ação (retenção, avançar a venda, expansão...), da maior para a menor prioridade, com o trecho da conversa que explica cada uma |
 | Carteira | Gestor | Os clientes ordenados pela reunião mais urgente de cada um |
 | Reuniões | Todos | Todas as reuniões, com busca e filtros por segmento, ação e confiança da transcrição |
@@ -71,7 +72,9 @@ src/
 │  ├─ api.ts                   de onde os dados vêm: arquivo JSON ou API
 │  └─ format.ts                datas, cores de cada ação e o trecho principal de cada reunião
 └─ components/
-   ├─ Sidebar.tsx              menu lateral (vira barra no topo no celular)
+   ├─ Topo.tsx                 menu do topo com as telas
+   ├─ Inicio.tsx               página inicial
+   ├─ Peneira.tsx              a bateia desenhada com as reuniões (SVG)
    ├─ FilaHoje.tsx             fila de ações do vendedor
    ├─ Carteira.tsx             clientes por prioridade
    ├─ Reunioes.tsx             todas as reuniões com filtros

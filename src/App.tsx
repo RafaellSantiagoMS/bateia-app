@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useBateia } from "./hooks/useBateia";
 import type { Conta, Reuniao } from "./types";
-import Sidebar, { type Pagina } from "./components/Sidebar";
+import Topo, { type Pagina } from "./components/Topo";
+import Inicio from "./components/Inicio";
 import FilaHoje from "./components/FilaHoje";
 import Carteira from "./components/Carteira";
 import Reunioes from "./components/Reunioes";
@@ -13,7 +14,7 @@ import DetalheConta from "./components/DetalheConta";
 
 export default function App() {
   const { dados, carregando, erro } = useBateia();
-  const [pagina, setPagina] = useState<Pagina>("fila");
+  const [pagina, setPagina] = useState<Pagina>("inicio");
 
   // Só um painel aberto por vez: uma reunião ou um cliente.
   const [reuniaoAberta, setReuniaoAberta] = useState<Reuniao | null>(null);
@@ -40,20 +41,29 @@ export default function App() {
   };
 
   return (
-    <div className="lg:flex">
-      <Sidebar pagina={pagina} onTrocar={trocarPagina} />
+    <>
+      <Topo pagina={pagina} onTrocar={trocarPagina} />
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 lg:py-12">
+      <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-8 lg:py-16">
+        {pagina === "inicio" && (
+          <Inicio resumo={resumo} reunioes={reunioes} onTrocar={trocarPagina} onAbrir={setReuniaoAberta} />
+        )}
         {pagina === "fila" && <FilaHoje reunioes={reunioes} acoes={resumo.acoes} onAbrir={setReuniaoAberta} />}
         {pagina === "carteira" && <Carteira contas={contas} onAbrir={setContaAberta} />}
         {pagina === "reunioes" && <Reunioes reunioes={reunioes} onAbrir={setReuniaoAberta} />}
         {pagina === "analisar" && <AnalisarReuniao />}
         {pagina === "sobre" && <SobreDados resumo={resumo} />}
-
-        <footer className="mt-16 border-t border-linha pt-6 text-xs text-suave">
-          Base real da TOTVS, anonimizada: nenhum nome de pessoa ou empresa aparece no site.
-        </footer>
       </main>
+
+      <footer className="border-t border-linha">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-6 px-4 py-10 sm:px-8">
+          <div>
+            <p className="titulo-largo text-xl">Bateia</p>
+            <p className="mt-2 text-sm text-suave">Challenge 2026 FIAP e TOTVS. Enzo Augusto, Gustavo Neres, Rafaell Santiago e Sebastian Iriarte.</p>
+          </div>
+          <p className="max-w-xs text-xs text-suave">Base real da TOTVS, anonimizada: nenhum nome de pessoa ou empresa aparece no site.</p>
+        </div>
+      </footer>
 
       {reuniaoAberta && (
         <Painel titulo={`Reunião ${reuniaoAberta.id}`} onFechar={() => setReuniaoAberta(null)}>
@@ -66,6 +76,6 @@ export default function App() {
           <DetalheConta conta={contaAberta} reunioes={reunioes} onAbrirReuniao={abrirReuniaoDaConta} />
         </Painel>
       )}
-    </div>
+    </>
   );
 }
