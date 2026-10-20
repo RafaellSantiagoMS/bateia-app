@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  /* base escura: leito de rio */
+  --color-fundo: #0f1513;
+  --color-cartao: #18201d;
+  --color-cartao-claro: #212b27;
+  --color-linha: #2c3833;
+  --color-texto: #f2efe7;
+  --color-suave: #a3aaa4;
+  --color-areia: #8a8063;
+  --color-cascalho: #3a4540;
+
+  /* destaque: o ouro da bateia */
+  --color-ouro: #e2b851;
+
+  /* blocos de cor, um por ação recomendada */
+  --color-rosa: #f7cfc8;
+  --color-manteiga: #ffe8ba;
+  --color-lilas: #e6d8f9;
+  --color-menta: #cfebda;
+  --color-ceu: #d5e5f7;
+  --color-tinta: #141a17;
+
+  /* prioridade */
+  --color-critica: #f0806f;
+  --color-alta: #e2b851;
+  --color-media: #b9c6d8;
+  --color-baixa: #6f7a73;
+
+  --font-sans: "Archivo Variable", system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  /* títulos largos, como no template Wesley */
+  .titulo-largo {
+    font-stretch: 125%;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+
+  .campo {
+    @apply h-11 rounded-xl border border-linha bg-cartao px-4 text-sm text-texto placeholder:text-suave focus:border-ouro focus:outline-none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ouro);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

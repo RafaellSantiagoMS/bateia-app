@@ -12,6 +12,7 @@ Site publicado: https://rafaellsantiagoms.github.io/bateia-app/
 
 | Tela | Para quem | O que mostra |
 |---|---|---|
+| Início | Todos | A bateia com as 982 reuniões (as mais urgentes assentam no centro, em dourado), os números da base, o caminho da transcrição até a recomendação e a reunião mais urgente do momento |
 | Fila de hoje | Vendedor | As reuniões que pedem uma ação (retenção, avançar a venda, expansão...), da maior para a menor prioridade, com o trecho da conversa que explica cada uma |
 | Carteira | Gestor | Os clientes ordenados pela reunião mais urgente de cada um |
 | Reuniões | Todos | Todas as reuniões, com busca e filtros por segmento, ação e confiança da transcrição |
@@ -34,7 +35,7 @@ Abre em `http://localhost:5173/bateia-app/`. O site carrega os dados com `fetch`
 Para gerar a versão de produção:
 
 ```bash
-npm run build     # gera a pasta dist/
+npm run build     # confere os tipos e gera a pasta dist/
 npm run preview   # serve a dist/ para conferir
 ```
 
@@ -52,28 +53,37 @@ python scripts/gerar_dados.py CAMINHO/ANON_transcricao.json CAMINHO/ANON_nome_tr
 
 Repositório do notebook e do protótipo: https://github.com/RafaellSantiagoMS/Bateia_Sprint4_DataScience
 
+## Tecnologias
+
+React 19 com TypeScript, Vite e Tailwind CSS 4, a mesma base dos projetos de React das aulas. Os ícones são do `lucide-react`, os gráficos da tela Sobre os dados são do Recharts e a fonte é a Archivo (pacote `@fontsource-variable/archivo`, sem depender do Google Fonts).
+
 ## Como o código está organizado
 
 ```
 src/
-├─ main.jsx                    liga o React na página e carrega as fontes
-├─ App.jsx                     navegação entre as telas e os painéis abertos
-├─ index.css                   cores, tipografia e layout
+├─ main.tsx                    liga o React na página e carrega a fonte
+├─ App.tsx                     navegação entre as telas e os painéis abertos
+├─ types.ts                    formato das reuniões, clientes e resumo
+├─ styles/
+│  └─ globals.css              cores e fonte no @theme do Tailwind
 ├─ hooks/
-│  └─ useBateiaData.js         carrega os dados (carregando / erro / dados)
+│  └─ useBateia.ts             carrega os dados (carregando / erro / dados)
 ├─ lib/
-│  ├─ api.js                   de onde os dados vêm: arquivo JSON ou API
-│  └─ format.js                datas, tons de cor e o trecho principal de cada reunião
+│  ├─ api.ts                   de onde os dados vêm: arquivo JSON ou API
+│  └─ format.ts                datas, cores de cada ação e o trecho principal de cada reunião
 └─ components/
-   ├─ FilaHoje.jsx             fila de ações do vendedor
-   ├─ Carteira.jsx             clientes por prioridade
-   ├─ Reunioes.jsx             todas as reuniões com filtros
-   ├─ AnalisarReuniao.jsx      formulário para uma transcrição nova
-   ├─ SobreDados.jsx           método e números da base
-   ├─ AnaliseReuniao.jsx       tudo o que foi encontrado em uma reunião
-   ├─ DetalheConta.jsx         reuniões de um cliente
-   ├─ Painel.jsx               painel lateral (fecha com Esc ou clicando fora)
-   └─ ui.jsx                   peças pequenas: prioridade, trecho, barras
+   ├─ Topo.tsx                 menu do topo com as telas
+   ├─ Inicio.tsx               página inicial
+   ├─ Peneira.tsx              a bateia desenhada com as reuniões (SVG)
+   ├─ FilaHoje.tsx             fila de ações do vendedor
+   ├─ Carteira.tsx             clientes por prioridade
+   ├─ Reunioes.tsx             todas as reuniões com filtros
+   ├─ AnalisarReuniao.tsx      formulário para uma transcrição nova
+   ├─ SobreDados.tsx           método e gráficos da base
+   ├─ AnaliseReuniao.tsx       tudo o que foi encontrado em uma reunião
+   ├─ DetalheConta.tsx         reuniões de um cliente
+   ├─ Painel.tsx               painel lateral (fecha com Esc, no X ou clicando fora)
+   └─ ui.tsx                   peças pequenas: cabeçalho, prioridade, trecho, barra
 ```
 
 ## Ligando na API (back-end)
